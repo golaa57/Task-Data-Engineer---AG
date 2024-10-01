@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: moviedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - movienet
+
+  transformation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/moviedb
+    networks:
+      - movienet
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./app:/app
+
+volumes:
+  postgres_data:
+
+networks:
+  movienet:
